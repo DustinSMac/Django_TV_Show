@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import show
+from django.contrib import messages
 
 # Create your views here.
 def index(request):
@@ -15,6 +16,11 @@ def new(request):
     return render(request,"new.html")
 
 def newShow(request):
+    errors= show.objects.basic_validator(request.POST)
+    if len(errors) >0:
+        for key,val in errors.items():
+            messages.error(request, val)
+        return redirect('/shows/new')
     newS=show.objects.create(
         title=request.POST['title'],
         network=request.POST['network'],
